@@ -9,6 +9,10 @@ struct ContentView: View {
     @State private var dragOffset: CGFloat = 0
     @FocusState private var isTextFieldFocused: Bool
     
+    // Chat functionality
+    @State private var messages: [ChatMessage] = []
+    @State private var chatState: ChatState = .idle
+    
     private let leftPageWidth: CGFloat = 280 // Width of the left page
     private let openThreshold: CGFloat = 100 // Threshold for auto-open
     
@@ -29,26 +33,34 @@ struct ContentView: View {
                         // Top Navigation
                         TopNavView(toggleDrawer: togglePages)
                         
-                        Spacer()
+                        // Chat area or spacer
+                        if !messages.isEmpty {
+                            ChatAreaView(messages: messages, chatState: chatState)
+                        } else {
+                            Spacer()
+                        }
                         
                         // Bottom Text Input Area
-                        BottomTextView(isTextFieldFocused: $isTextFieldFocused)
-                            .padding(.bottom, bottomComponentOffset)
-                            .gesture(
-                                // Vertical gestures ONLY on the text input component
-                                DragGesture()
-                                    .onEnded { value in
-                                        if !isLeftPageVisible { // Only when drawer is closed
-                                            let verticalMovement = value.translation.height
-                                            
-                                            if verticalMovement < -50 { // Swipe up on component
-                                                isTextFieldFocused = true
-                                            } else if verticalMovement > 50 { // Swipe down on component
-                                                isTextFieldFocused = false
-                                            }
+                        BottomTextView(
+                            isTextFieldFocused: $isTextFieldFocused,
+                            onSend: handleSendMessage
+                        )
+                        .padding(.bottom, bottomComponentOffset)
+                        .gesture(
+                            // Vertical gestures ONLY on the text input component
+                            DragGesture()
+                                .onEnded { value in
+                                    if !isLeftPageVisible { // Only when drawer is closed
+                                        let verticalMovement = value.translation.height
+                                        
+                                        if verticalMovement < -50 { // Swipe up on component
+                                            isTextFieldFocused = true
+                                        } else if verticalMovement > 50 { // Swipe down on component
+                                            isTextFieldFocused = false
                                         }
                                     }
-                            )
+                                }
+                        )
                     }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -66,7 +78,7 @@ struct ContentView: View {
 
             }
             .offset(x: isLeftPageVisible ? 0 + dragOffset : -leftPageWidth + dragOffset)
-            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isLeftPageVisible)
+            .animation(.spring(response: 0.3, dampingFraction: 1.0), value: isLeftPageVisible)
             .gesture(
                 // Horizontal gestures for drawer control (anywhere on screen)
                 DragGesture()
@@ -80,9 +92,42 @@ struct ContentView: View {
         }
     }
     
+    // MARK: - Chat Functions
+    private func handleSendMessage(_ text: String) {
+        // Add user message
+        let userMessage = ChatMessage(content: text, isUser: true)
+        messages.append(userMessage)
+        
+        // Start thinking state
+        chatState = .thinking
+        
+        // Quick haptic feedback when message is sent and loading animation appears
+        let quickHaptic = UIImpactFeedbackGenerator(style: .light)
+        quickHaptic.impactOccurred()
+        
+        // Simulate AI response with 5-second delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            chatState = .responding
+            
+            // Add AI response
+            let aiMessage = ChatMessage(content: "This is a simulated AI response to: \"\(text)\". The actual AI integration will be implemented later.", isUser: false)
+            messages.append(aiMessage)
+            
+            // Longer haptic feedback when AI response is generated
+            let responseHaptic = UIImpactFeedbackGenerator(style: .medium)
+            responseHaptic.impactOccurred()
+            
+            // Return to idle state
+            chatState = .idle
+        }
+        
+        // Dismiss keyboard
+        isTextFieldFocused = false
+    }
+    
     // MARK: - Page Functions
     private func togglePages() {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 1.0)) {
             isLeftPageVisible.toggle()
         }
         
@@ -107,7 +152,7 @@ struct ContentView: View {
         let translation = value.translation.width
         let velocity = value.predictedEndTranslation.width
         
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 1.0)) {
             if isLeftPageVisible {
                 // Left page is visible, decide whether to close
                 if translation < -openThreshold || velocity < -500 {

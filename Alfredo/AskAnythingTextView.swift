@@ -1,24 +1,53 @@
 import SwiftUI
 
 struct AskAnythingTextView: View {
-    @State private var text = ""
+    @Binding var text: String
     @FocusState.Binding var isFocused: Bool
+    var onSend: (String) -> Void = { _ in }
+    var baseHeight: CGFloat = 44
+    
+    private let maxLines = 7
+    private let lineHeight: CGFloat = 20
+    
+    private var dynamicHeight: CGFloat {
+        let lineCount = max(1, text.components(separatedBy: .newlines).count)
+        let clampedLines = min(lineCount, maxLines)
+        
+        if lineCount == 1 && text.isEmpty {
+            return baseHeight // Match plus button height when empty
+        } else {
+            let calculatedHeight = CGFloat(clampedLines) * lineHeight + 24 // 24 for padding
+            return max(baseHeight, calculatedHeight)
+        }
+    }
     
     var body: some View {
-        HStack {
-            TextField("Ask anything", text: $text)
-                .foregroundColor(.white)
-                .font(.body)
-                .textFieldStyle(PlainTextFieldStyle())
-                .focused($isFocused)
-                .placeholder(when: text.isEmpty) {
-                    Text("Ask anything")
-                        .foregroundColor(.gray)
-                        .font(.body)
+        TextEditor(text: $text)
+            .foregroundColor(.white)
+            .font(.body)
+            .focused($isFocused)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+            .overlay(
+                // Placeholder text
+                VStack {
+                    HStack {
+                        if text.isEmpty {
+                            Text("Ask anything")
+                                .foregroundColor(.gray)
+                                .font(.body)
+                                .allowsHitTesting(false)
+                        }
+                        Spacer()
+                    }
+                    Spacer()
                 }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+                .padding(.top, 8)
+                .padding(.leading, 4)
+            )
+            .onSubmit {
+                // Handle return key - do nothing, let it create new line
+            }
     }
     
 
@@ -39,7 +68,8 @@ extension View {
 }
 
 #Preview {
-    @FocusState var focused: Bool
-    return AskAnythingTextView(isFocused: $focused)
+    @Previewable @FocusState var focused: Bool
+    @Previewable @State var text = ""
+    return AskAnythingTextView(text: $text, isFocused: $focused, baseHeight: 44)
         .background(Color.black)
 }

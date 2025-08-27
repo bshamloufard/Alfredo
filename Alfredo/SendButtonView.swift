@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct SendButtonView: View {
+    var onSend: () -> Void = {}
+    
     var body: some View {
         Button(action: {
-            // Future functionality - send button action
-            print("Send button tapped")
+            onSend()
         }) {
             Image(systemName: "arrow.up")
                 .font(.system(size: 16, weight: .semibold))

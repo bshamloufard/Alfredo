@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7DCEF2A22E5E8C7600BDE560 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = 7DCEF2A12E5E8C7600BDE560 /* RiveRuntime */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7DEE79362E5BA4A90004AC1E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -30,6 +34,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		7DCEF2A32E5E8C7F00BDE560 /* RiveAssets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = RiveAssets;
+			sourceTree = "<group>";
+		};
 		7DEE792A2E5BA4A80004AC1E /* Alfredo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Alfredo;
@@ -52,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DCEF2A22E5E8C7600BDE560 /* RiveRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +82,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7DCEF2A02E5E8C7600BDE560 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7DEE791F2E5BA4A80004AC1E = {
 			isa = PBXGroup;
 			children = (
+				7DCEF2A32E5E8C7F00BDE560 /* RiveAssets */,
 				7DEE792A2E5BA4A80004AC1E /* Alfredo */,
 				7DEE79382E5BA4A90004AC1E /* AlfredoTests */,
 				7DEE79422E5BA4A90004AC1E /* AlfredoUITests */,
+				7DCEF2A02E5E8C7600BDE560 /* Frameworks */,
 				7DEE79292E5BA4A80004AC1E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,10 +127,12 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				7DCEF2A32E5E8C7F00BDE560 /* RiveAssets */,
 				7DEE792A2E5BA4A80004AC1E /* Alfredo */,
 			);
 			name = Alfredo;
 			packageProductDependencies = (
+				7DCEF2A12E5E8C7600BDE560 /* RiveRuntime */,
 			);
 			productName = Alfredo;
 			productReference = 7DEE79282E5BA4A80004AC1E /* Alfredo.app */;
@@ -195,6 +216,9 @@
 			);
 			mainGroup = 7DEE791F2E5BA4A80004AC1E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7DCEF29F2E5E8C6000BDE560 /* XCRemoteSwiftPackageReference "rive-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7DEE79292E5BA4A80004AC1E /* Products */;
 			projectDirPath = "";
@@ -558,6 +582,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7DCEF29F2E5E8C6000BDE560 /* XCRemoteSwiftPackageReference "rive-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rive-app/rive-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.11.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7DCEF2A12E5E8C7600BDE560 /* RiveRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7DCEF29F2E5E8C6000BDE560 /* XCRemoteSwiftPackageReference "rive-ios" */;
+			productName = RiveRuntime;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7DEE79202E5BA4A80004AC1E /* Project object */;
 }

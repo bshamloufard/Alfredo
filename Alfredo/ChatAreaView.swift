@@ -25,7 +25,7 @@ struct ChatAreaView: View {
                 }
                 .padding(.vertical, 16)
             }
-            .onChange(of: messages.count) { _ in
+            .onChange(of: messages.count) {
                 // Auto-scroll to latest message
                 if let lastMessage = messages.last {
                     withAnimation(.easeOut(duration: 0.3)) {
@@ -33,9 +33,9 @@ struct ChatAreaView: View {
                     }
                 }
             }
-            .onChange(of: chatState) { state in
+            .onChange(of: chatState) {
                 // Auto-scroll when thinking starts
-                if state == .thinking {
+                if chatState == .thinking {
                     withAnimation(.easeOut(duration: 0.3)) {
                         proxy.scrollTo("thinking", anchor: .bottom)
                     }

@@ -13,6 +13,17 @@ struct ChatAreaView: View {
                             .id(message.id)
                     }
                     
+                    // Show tool detection animation when detecting tools
+                    if case .toolDetection(let toolType) = chatState {
+                        HStack {
+                            ToolDetectionAnimationView(toolType: toolType)
+                                .id("toolDetection-\(toolType)-\(messages.count)")
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16)
+                        .id("toolDetection")
+                    }
+                    
                     // Show thinking animation when AI is thinking
                     if chatState == .thinking {
                         HStack {
@@ -34,8 +45,14 @@ struct ChatAreaView: View {
                 }
             }
             .onChange(of: chatState) {
+                // Auto-scroll when tool detection starts
+                if case .toolDetection = chatState {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        proxy.scrollTo("toolDetection", anchor: .bottom)
+                    }
+                }
                 // Auto-scroll when thinking starts
-                if chatState == .thinking {
+                else if chatState == .thinking {
                     withAnimation(.easeOut(duration: 0.3)) {
                         proxy.scrollTo("thinking", anchor: .bottom)
                     }

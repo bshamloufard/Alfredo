@@ -16,6 +16,10 @@ struct PlusButtonView: View {
             Circle()
                 .fill(Color(red: 26/255, green: 26/255, blue: 26/255))
         )
+        .overlay(
+            Circle()
+                .stroke(Color(red: 32/255, green: 32/255, blue: 32/255), lineWidth: 1)
+        )
     }
 }
 

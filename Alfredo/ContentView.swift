@@ -29,6 +29,7 @@ struct ContentView: View {
                     Color(red: 20/255, green: 20/255, blue: 20/255)
                         .ignoresSafeArea()
                     
+
                     VStack(spacing: 0) {
                         // Top Navigation
                         TopNavView(toggleDrawer: togglePages)
@@ -98,27 +99,57 @@ struct ContentView: View {
         let userMessage = ChatMessage(content: text, isUser: true)
         messages.append(userMessage)
         
-        // Start thinking state
-        chatState = .thinking
+        // Detect which tool to use based on message content
+        let detectedTool = detectToolFromMessage(text)
         
-        // Quick haptic feedback when message is sent and loading animation appears
+        // Quick haptic feedback when message is sent and animation appears
         let quickHaptic = UIImpactFeedbackGenerator(style: .light)
         quickHaptic.impactOccurred()
         
-        // Simulate AI response with 5-second delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-            chatState = .responding
+        if let tool = detectedTool {
+            // Tool detected - start tool detection animation sequence
+            chatState = .toolDetection(toolType: tool)
             
-            // Add AI response
-            let aiMessage = ChatMessage(content: "This is a simulated AI response to: \"\(text)\". The actual AI integration will be implemented later.", isUser: false)
-            messages.append(aiMessage)
+            // After tool detection animation (6 seconds total: 3s rive + 3s tool card)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) {
+                // Start thinking state with Rive animation
+                chatState = .thinking
+                
+                // After thinking animation (5 seconds)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                    chatState = .responding
+                    
+                    // Add AI response
+                    let aiMessage = ChatMessage(content: "This is a simulated AI response to: \"\(text)\". The actual AI integration will be implemented later.", isUser: false)
+                    messages.append(aiMessage)
+                    
+                    // Longer haptic feedback when AI response is generated
+                    let responseHaptic = UIImpactFeedbackGenerator(style: .medium)
+                    responseHaptic.impactOccurred()
+                    
+                    // Return to idle state
+                    chatState = .idle
+                }
+            }
+        } else {
+            // No tool detected - go straight to thinking state
+            chatState = .thinking
             
-            // Longer haptic feedback when AI response is generated
-            let responseHaptic = UIImpactFeedbackGenerator(style: .medium)
-            responseHaptic.impactOccurred()
-            
-            // Return to idle state
-            chatState = .idle
+            // After thinking animation (5 seconds)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                chatState = .responding
+                
+                // Add AI response
+                let aiMessage = ChatMessage(content: "This is a simulated AI response to: \"\(text)\". The actual AI integration will be implemented later.", isUser: false)
+                messages.append(aiMessage)
+                
+                // Longer haptic feedback when AI response is generated
+                let responseHaptic = UIImpactFeedbackGenerator(style: .medium)
+                responseHaptic.impactOccurred()
+                
+                // Return to idle state
+                chatState = .idle
+            }
         }
         
         // Dismiss keyboard
@@ -129,6 +160,11 @@ struct ContentView: View {
     private func togglePages() {
         withAnimation(.spring(response: 0.3, dampingFraction: 1.0)) {
             isLeftPageVisible.toggle()
+            
+            // Close keyboard when opening drawer
+            if isLeftPageVisible && isTextFieldFocused {
+                isTextFieldFocused = false
+            }
         }
         
         // Haptic feedback
@@ -168,6 +204,11 @@ struct ContentView: View {
                 if translation > openThreshold || velocity > 500 {
                     // Open left page
                     isLeftPageVisible = true
+                    
+                    // Close keyboard when opening drawer
+                    if isTextFieldFocused {
+                        isTextFieldFocused = false
+                    }
                     
                     // Haptic feedback for open
                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
